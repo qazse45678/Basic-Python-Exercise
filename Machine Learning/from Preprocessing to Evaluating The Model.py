@@ -22,6 +22,7 @@ print(data.describe())
 #如果打 data.describe 會輸出全部的 row data
 #但打 data.describe() 會輸出 data 的統計值總覽
 
+#Split the data into training and test set
 y = data.quality
 X = data.drop('quality', axis = 1)
 X_train, X_test, y_train, y_test = train_test_split(
@@ -31,6 +32,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify = y #劃分出來的測試集或訓練集中，其類標籤的比例同輸入的數組中類標籤的比例相同，可以用於處理不均衡的數據集
 )
 
+#Scale the data (standardization)
 X_train_scaled = preprocessing.scale(X_train)
 print(X_train_scaled.mean(axis = 0))
 print(X_train_scaled.std(axis = 0))
@@ -38,21 +40,23 @@ scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = scaler.transform(X_train)
 print(X_train_scaled.mean())
 print(X_train_scaled.std(axis = 0))
-pipeline = make_pipeline(preprocessing.StandardScaler(),
-												RandomForestRegressor(n_estimators=100))
-pipeline = make_pipeline(preprocessing.StandardScaler(), 
-                         RandomForestRegressor(n_estimators=100))
-print(pipeline.get_params())
-hyperparameters = { 'randomforestregressor__max_features' : ['auto', 'sqrt', 'log2'],
-										'randomforestregressor__max_depth': [None, 5, 3, 1]}
 
+#Declare hyperparameters
+pipeline = make_pipeline(preprocessing.StandardScaler(), RandomForestRegressor(n_estimators=100))
+pipeline = make_pipeline(preprocessing.StandardScaler(), RandomForestRegressor(n_estimators=100))
+print(pipeline.get_params())
+hyperparameters = { 'randomforestregressor__max_features' : ['auto', 'sqrt', 'log2'], 'randomforestregressor__max_depth': [None, 5, 3, 1]}
+
+#Using cross-validation to tune the model
 clf = GridSearchCV(pipeline, hyperparameters, cv=10)
 # fit 用來訓練＆校正模型
 clf.fit(X_train, y_train)
 clf.best_params_
 
+#Refit on the training set
 print clf.refit
 
+#Predict
 y_pred = clf.pred(X_test)
 y_pred
 print(r2_score(y_test, y_pred))
