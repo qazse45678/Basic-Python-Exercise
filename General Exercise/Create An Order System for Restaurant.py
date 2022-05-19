@@ -32,7 +32,6 @@ for item in customer:
     menu.update({item: [menu[item][0], count += 1]})
     totalPrice += int(menu[item][0])
 
-#我從這開始就亂寫一通
 print('Okay, you ordered ', end = '')
     
 for key, value in menu.items():
